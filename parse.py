@@ -21,32 +21,32 @@ class ParsePDF(object):
         names = os.listdir(self.pdf_folder)
         return names
 
-    def parse(self,path:str):
-        fp = open(path,"rb")
-        parser = PDFParser(fp)
-        doc = PDFDocument()
-        parser.set_document(doc)
-        doc.set_parser(parser)
-        doc.initialize()
-        if not doc.is_extractable:
-            raise PDFTextExtractionNotAllowed
-        else:
-            rsrcmgr = PDFResourceManager()
-            laparams = LAParams()
-            device = PDFPageAggregator(rsrcmgr, laparams=laparams)
-            interpreter = PDFPageInterpreter(rsrcmgr, device)
-            for page in doc.get_pages():
-                interpreter.process_page(page)
-                layout = device.get_result()
-                for x in layout:
-                    if isinstance(x, LTTextBoxHorizontal):
-                        result = x.get_text()
-                        print(result)
+    def parse(self, path: str):
+        with open(path, "rb") as fp:
+            parser = PDFParser(fp)
+            doc = PDFDocument()
+            parser.set_document(doc)
+            doc.set_parser(parser)
+            doc.initialize()
+            if not doc.is_extractable:
+                raise PDFTextExtractionNotAllowed
+            else:
+                rsrcmgr = PDFResourceManager()
+                laparams = LAParams()
+                device = PDFPageAggregator(rsrcmgr, laparams=laparams)
+                interpreter = PDFPageInterpreter(rsrcmgr, device)
+                for page in doc.get_pages():
+                    interpreter.process_page(page)
+                    layout = device.get_result()
+                    for x in layout:
+                        if isinstance(x, LTTextBoxHorizontal):
+                            result = x.get_text()
+                            print(result)
 
     def main(self):
         names = self.get_pdf_names()
         for name in names:
-            abs_path = os.path.join(self.pdf_folder,name)
+            abs_path = os.path.join(self.pdf_folder, name)
             self.parse(abs_path)
 
 
